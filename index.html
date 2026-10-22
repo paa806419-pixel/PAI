@@ -1,0 +1,1545 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Petualangan Puasa: Game PAI Kelas 5</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="https://iili.io/nOsfscB.th.png">
+    <link rel="apple-touch-icon" href="https://iili.io/nOsfscB.th.png">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Canvas Confetti for Celebration -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Amiri:wght@400;700&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        emeraldCustom: {
+                            50: '#ecfdf5',
+                            100: '#d1fae5',
+                            500: '#10b981',
+                            600: '#059669',
+                            700: '#047857',
+                            800: '#065f46',
+                            900: '#064e3b',
+                        },
+                        limeAccent: '#84cc16',
+                        goldAccent: '#f59e0b'
+                    },
+                    fontFamily: {
+                        fredoka: ['Fredoka', 'sans-serif'],
+                        quicksand: ['Quicksand', 'sans-serif'],
+                        arabic: ['Amiri', 'serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background: linear-gradient(135deg, #064e3b 0%, #047857 50%, #10b981 100%);
+            min-height: 100vh;
+            user-select: none;
+        }
+        
+        .font-title {
+            font-family: 'Fredoka', cursive;
+        }
+
+        .font-arabic {
+            font-family: 'Amiri', serif;
+            direction: rtl;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-hover-effect {
+            transition: all 0.2s ease;
+        }
+        .btn-hover-effect:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.2);
+        }
+        .btn-hover-effect:active {
+            transform: translateY(0);
+        }
+
+        /* Pulse animation for key badges */
+        @keyframes floatAnim {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
+        }
+        .animate-float {
+            animation: floatAnim 3s ease-in-out infinite;
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #059669;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="text-slate-800 flex flex-col justify-between min-h-screen p-2 md:p-4">
+
+    <header class="max-w-5xl mx-auto w-full glass-card rounded-2xl p-4 mb-4 flex flex-wrap justify-between items-center shadow-lg">
+        <div class="flex items-center space-x-3">
+            <div class="bg-emerald-600 text-white p-3 rounded-xl shadow-md text-2xl">
+                <i class="fa-solid fa-mosque"></i>
+            </div>
+            <div>
+                <h1 class="font-title text-xl md:text-2xl font-bold text-emerald-900 leading-tight">Petualangan Puasa</h1>
+                <p class="text-xs md:text-sm text-emerald-700 font-semibold">PAI Kelas 5 Semester 1 • Puasa Wajib & Sunah</p>
+            </div>
+        </div>
+
+        <!-- Global Stats & Controls -->
+        <div class="flex items-center space-x-2 mt-2 sm:mt-0 flex-wrap gap-1">
+            <div class="bg-amber-100 text-amber-800 px-3 py-1.5 rounded-xl border border-amber-300 font-bold flex items-center gap-2">
+                <i class="fa-solid fa-star text-amber-500"></i>
+                <span id="global-score">Skor: 0</span>
+            </div>
+            <button id="btn-sound" onclick="toggleAudio()" class="bg-emerald-100 hover:bg-emerald-200 text-emerald-800 p-2.5 rounded-xl border border-emerald-300 transition" title="Suara Efek">
+                <i id="sound-icon" class="fa-solid fa-volume-high text-lg"></i>
+            </button>
+            <button id="btn-fullscreen" onclick="toggleFullscreen()" class="bg-emerald-100 hover:bg-emerald-200 text-emerald-800 p-2.5 rounded-xl border border-emerald-300 transition" title="Layar Penuh">
+                <i id="fullscreen-icon" class="fa-solid fa-expand text-lg"></i>
+            </button>
+            <button onclick="showDoaModal()" class="bg-amber-500 hover:bg-amber-600 text-white px-3 py-2 rounded-xl font-bold shadow transition flex items-center gap-1.5 text-sm">
+                <i class="fa-solid fa-hands-praying"></i>
+                <span>Niat & Doa</span>
+            </button>
+            <button onclick="showMateriModal()" class="bg-lime-500 hover:bg-lime-600 text-white px-3 py-2 rounded-xl font-bold shadow transition flex items-center gap-1.5 text-sm">
+                <i class="fa-solid fa-book-open"></i>
+                <span>Rangkuman</span>
+            </button>
+        </div>
+    </header>
+        <!-- ================= MAIN MENU ================= -->
+        <div id="view-menu" class="glass-card rounded-3xl p-6 md:p-8 shadow-2xl text-center">
+            <div class="max-w-2xl mx-auto">
+                <div class="inline-block bg-emerald-100 text-emerald-800 px-4 py-1.5 rounded-full font-bold text-sm mb-2 animate-float">
+                    ✨ Belajar PAI Lebih Seru dan Interaktif! ✨
+                </div>
+                <div class="text-emerald-900 font-bold text-sm md:text-base mb-4">
+                    Disusun Oleh : Yesi Harini, S.Pd I
+                </div>
+                <h2 class="font-title text-3xl md:text-4xl font-bold text-emerald-900 mb-2">Pilih Arena Permainan</h2>
+                <p class="text-slate-600 mb-6">Pilih salah satu tantangan di bawah ini untuk menguji pemahamanmu tentang Puasa Wajib & Sunah!</p>
+
+                <!-- Grid Buttons -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left">
+                    <!-- Game 1: Kuis Pilihan Ganda -->
+                    <button onclick="startQuizGame()" class="btn-hover-effect bg-gradient-to-br from-emerald-500 to-teal-700 text-white p-5 rounded-2xl shadow-lg border border-emerald-400 relative overflow-hidden group">
+                        <div class="flex items-center gap-4">
+                            <div class="bg-white/20 p-4 rounded-xl text-3xl group-hover:scale-110 transition">
+                                <i class="fa-solid fa-brain"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-title text-lg font-bold">1. Kuis Paham Puasa</h3>
+                                <p class="text-xs text-emerald-100 mt-1">Uji pengetahuan materi puasa & bacaan doa secara cerdas.</p>
+                            </div>
+                        </div>
+                    </button>
+
+                    <!-- Game 2: Sortir Puasa -->
+                    <button onclick="startSortGame()" class="btn-hover-effect bg-gradient-to-br from-teal-600 to-emerald-800 text-white p-5 rounded-2xl shadow-lg border border-teal-400 relative overflow-hidden group">
+                        <div class="flex items-center gap-4">
+                            <div class="bg-white/20 p-4 rounded-xl text-3xl group-hover:scale-110 transition">
+                                <i class="fa-solid fa-list-check"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-title text-lg font-bold">2. Sortir Wajib & Sunah</h3>
+                                <p class="text-xs text-teal-100 mt-1">Kelompokkan jenis-jenis puasa dengan cepat dan tepat!</p>
+                            </div>
+                        </div>
+                    </button>
+
+                    <!-- Game 3: Tebak Hari Dilarang & Sunah -->
+                    <button onclick="startCalendarGame()" class="btn-hover-effect bg-gradient-to-br from-lime-600 to-emerald-700 text-white p-5 rounded-2xl shadow-lg border border-lime-400 relative overflow-hidden group">
+                        <div class="flex items-center gap-4">
+                            <div class="bg-white/20 p-4 rounded-xl text-3xl group-hover:scale-110 transition">
+                                <i class="fa-solid fa-calendar-day"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-title text-lg font-bold">3. Detektif Hari Puasa</h3>
+                                <p class="text-xs text-lime-100 mt-1">Tebak hari yang diharamkan dan hari yang disunahkan.</p>
+                            </div>
+                        </div>
+                    </button>
+
+                    <!-- Game 4: Cari Kata Hikmah -->
+                    <button onclick="startWordSearchGame()" class="btn-hover-effect bg-gradient-to-br from-emerald-600 to-emerald-900 text-white p-5 rounded-2xl shadow-lg border border-emerald-500 relative overflow-hidden group">
+                        <div class="flex items-center gap-4">
+                            <div class="bg-white/20 p-4 rounded-xl text-3xl group-hover:scale-110 transition">
+                                <i class="fa-solid fa-magnifying-glass font-bold"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-title text-lg font-bold">4. Cari Kata Islami</h3>
+                                <p class="text-xs text-emerald-200 mt-1">Temukan kata rukun, syarat, dan hikmah puasa!</p>
+                            </div>
+                        </div>
+                    </button>
+                </div>
+
+                <!-- Modul Niat & Doa Shortcut Banner -->
+                <div onclick="showDoaModal()" class="mt-6 cursor-pointer bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white rounded-2xl p-4 shadow-lg flex items-center justify-between transition transform hover:-translate-y-1">
+                    <div class="flex items-center gap-3">
+                        <div class="bg-white/20 p-3 rounded-xl text-2xl">
+                            <i class="fa-solid fa-hands-praying"></i>
+                        </div>
+                        <div class="text-left">
+                            <h4 class="font-title font-bold text-base">Kumpulan Niat & Doa Puasa Lengkap</h4>
+                            <p class="text-xs text-amber-100">Pelajari Niat Puasa Ramadan, Puasa Sunah, Doa Saat Berpuasa, dan Doa Berbuka.</p>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-chevron-right text-lg"></i>
+                </div>
+
+                <!-- 5 Kata Kunci Banner -->
+                <div class="mt-4 bg-emerald-50 rounded-2xl p-4 border border-emerald-200 flex flex-wrap justify-around items-center gap-2">
+                    <span class="text-xs font-bold text-emerald-800 uppercase tracking-wider w-full mb-1">💡 5 Kata Kunci Penting:</span>
+                    <span class="bg-emerald-600 text-white px-3 py-1 rounded-full text-xs font-bold shadow-sm">1. NIAT</span>
+                    <span class="bg-emerald-600 text-white px-3 py-1 rounded-full text-xs font-bold shadow-sm">2. SAHUR</span>
+                    <span class="bg-emerald-600 text-white px-3 py-1 rounded-full text-xs font-bold shadow-sm">3. MENAHAN DIRI</span>
+                    <span class="bg-emerald-600 text-white px-3 py-1 rounded-full text-xs font-bold shadow-sm">4. SABAR</span>
+                    <span class="bg-emerald-600 text-white px-3 py-1 rounded-full text-xs font-bold shadow-sm">5. BERBUKA</span>
+                </div>
+            </div>
+        </div>
+
+        <div id="view-quiz" class="glass-card rounded-3xl p-6 md:p-8 shadow-2xl hidden">
+            <!-- Progress & Header -->
+            <div class="flex justify-between items-center mb-6 border-b border-emerald-100 pb-4">
+                <button onclick="showMainMenu()" class="text-emerald-700 hover:text-emerald-900 font-bold flex items-center gap-2">
+                    <i class="fa-solid fa-arrow-left"></i> Kembali
+                </button>
+                <span id="quiz-progress" class="font-title text-emerald-800 font-bold bg-emerald-100 px-4 py-1.5 rounded-full text-sm">Pertanyaan 1/10</span>
+            </div>
+
+            <!-- Question Card -->
+            <div class="max-w-2xl mx-auto">
+                <div class="bg-emerald-800 text-white p-6 rounded-2xl shadow-md mb-6 relative overflow-hidden">
+                    <div class="absolute -right-4 -bottom-4 opacity-10 text-8xl text-white">
+                        <i class="fa-solid fa-moon"></i>
+                    </div>
+                    <span id="quiz-category" class="inline-block bg-lime-400 text-emerald-950 font-bold text-xs px-2.5 py-0.5 rounded mb-2">Materi Puasa</span>
+                    <h3 id="quiz-question" class="font-title text-xl md:text-2xl font-semibold leading-relaxed">Pertanyaan akan muncul di sini?</h3>
+                </div>
+
+                <!-- Options -->
+                <div id="quiz-options" class="grid grid-cols-1 gap-3 mb-6">
+                    <!-- Dynamic Option Buttons -->
+                </div>
+
+                <!-- Feedback Box -->
+                <div id="quiz-feedback" class="hidden p-4 rounded-xl text-center font-bold text-sm mb-4"></div>
+
+                <!-- Next Button -->
+                <button id="btn-next-quiz" onclick="nextQuestion()" class="hidden w-full bg-emerald-600 hover:bg-emerald-700 text-white font-title text-lg py-3 rounded-xl shadow-lg transition">
+                    Lanjut Pertanyaan Berikutnya <i class="fa-solid fa-arrow-right ml-2"></i>
+                </button>
+            </div>
+        </div>
+
+        <div id="view-sort" class="glass-card rounded-3xl p-6 md:p-8 shadow-2xl hidden">
+            <div class="flex justify-between items-center mb-4 border-b border-emerald-100 pb-3">
+                <button onclick="showMainMenu()" class="text-emerald-700 hover:text-emerald-900 font-bold flex items-center gap-2">
+                    <i class="fa-solid fa-arrow-left"></i> Kembali
+                </button>
+                <div class="font-title text-emerald-800 font-bold bg-emerald-100 px-4 py-1 rounded-full text-sm">
+                    Sisa Kartu: <span id="sort-cards-left">0</span>
+                </div>
+            </div>
+
+            <div class="text-center mb-6">
+                <h3 class="font-title text-2xl font-bold text-emerald-900">Klasifikasikan Jenis Puasa</h3>
+                <p class="text-sm text-slate-600">Tekan tombol kategori yang sesuai untuk setiap jenis puasa di bawah ini!</p>
+            </div>
+
+            <!-- Current Active Card to Classify -->
+            <div class="max-w-md mx-auto mb-6">
+                <div id="current-sort-card" class="bg-gradient-to-br from-amber-400 to-amber-500 text-slate-900 p-6 rounded-2xl shadow-xl text-center transform transition duration-300">
+                    <span class="text-xs font-bold uppercase tracking-wider text-amber-900">Jenis Puasa:</span>
+                    <h4 id="sort-card-title" class="font-title text-2xl font-bold mt-1 mb-2">Puasa Ramadan</h4>
+                    <p id="sort-card-desc" class="text-xs text-amber-950 font-medium">Puasa selama bulan Ramadan yang wajib dilakukan oleh umat Islam.</p>
+                </div>
+            </div>
+
+            <!-- Bin Selection Buttons -->
+            <div class="grid grid-cols-2 gap-4 max-w-md mx-auto">
+                <button onclick="classifyCard('wajib')" class="btn-hover-effect bg-emerald-700 hover:bg-emerald-800 text-white p-4 rounded-2xl shadow-lg border-2 border-emerald-500 text-center">
+                    <div class="text-3xl mb-1"><i class="fa-solid fa-check-double"></i></div>
+                    <span class="font-title font-bold text-lg block">PUASA WAJIB</span>
+                    <span class="text-xs text-emerald-200">Harus dikerjakan</span>
+                </button>
+
+                <button onclick="classifyCard('sunah')" class="btn-hover-effect bg-teal-600 hover:bg-teal-700 text-white p-4 rounded-2xl shadow-lg border-2 border-teal-400 text-center">
+                    <div class="text-3xl mb-1"><i class="fa-solid fa-star text-amber-300"></i></div>
+                    <span class="font-title font-bold text-lg block">PUASA SUNAH</span>
+                    <span class="text-xs text-teal-200">Dianjurkan (Pahala)</span>
+                </button>
+            </div>
+        </div>
+
+        <div id="view-calendar" class="glass-card rounded-3xl p-6 md:p-8 shadow-2xl hidden">
+            <div class="flex justify-between items-center mb-4 border-b border-emerald-100 pb-3">
+                <button onclick="showMainMenu()" class="text-emerald-700 hover:text-emerald-900 font-bold flex items-center gap-2">
+                    <i class="fa-solid fa-arrow-left"></i> Kembali
+                </button>
+                <span class="font-title text-emerald-800 font-bold bg-emerald-100 px-4 py-1 rounded-full text-sm">Hari Ke-<span id="cal-index">1</span>/6</span>
+            </div>
+
+            <div class="max-w-xl mx-auto text-center">
+                <h3 class="font-title text-2xl font-bold text-emerald-900 mb-2">Detektif Hari Hukum Puasa</h3>
+                <p class="text-sm text-slate-600 mb-6">Tentukan apakah pada hari/tanggal Hijriah berikut kita **DISUNAHKAN** atau **DILARANG (HARAM)** berpuasa!</p>
+
+                <div class="bg-white border-2 border-emerald-200 p-6 rounded-2xl shadow-lg mb-6 relative">
+                    <div class="text-4xl text-emerald-600 mb-2"><i class="fa-regular fa-calendar-check"></i></div>
+                    <h4 id="cal-day-name" class="font-title text-2xl font-bold text-emerald-950">1 Syawal (Hari Raya Idulfitri)</h4>
+                    <p id="cal-day-desc" class="text-sm text-slate-500 mt-2">Hari kemenangan setelah sebulan penuh berpuasa.</p>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <button onclick="checkCalendarAnswer('sunah')" class="btn-hover-effect bg-emerald-600 hover:bg-emerald-700 text-white font-title p-4 rounded-xl shadow-md text-lg">
+                        <i class="fa-solid fa-thumbs-up block text-2xl mb-1"></i>
+                        Sunah Berpuasa
+                    </button>
+                    <button onclick="checkCalendarAnswer('dilarang')" class="btn-hover-effect bg-rose-600 hover:bg-rose-700 text-white font-title p-4 rounded-xl shadow-md text-lg">
+                        <i class="fa-solid fa-ban block text-2xl mb-1"></i>
+                        Dilarang (Haram)
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- ================= GAME 4: CARI KATA ISLAMI ================= -->
+        <div id="view-wordsearch" class="glass-card rounded-3xl p-6 md:p-8 shadow-2xl hidden">
+            <div class="flex justify-between items-center mb-4 border-b border-emerald-100 pb-3">
+                <button onclick="showMainMenu()" class="text-emerald-700 hover:text-emerald-900 font-bold flex items-center gap-2">
+                    <i class="fa-solid fa-arrow-left"></i> Kembali
+                </button>
+                <div class="font-title text-emerald-800 font-bold bg-emerald-100 px-4 py-1 rounded-full text-sm">
+                    Ditemukan: <span id="ws-found-count">0</span> / <span id="ws-total-count">10</span>
+                </div>
+            </div>
+
+            <div class="text-center mb-4">
+                <h3 class="font-title text-2xl font-bold text-emerald-900">Cari Kata Hikmah & Istilah Puasa</h3>
+                <p class="text-xs md:text-sm text-slate-600">Klik/sentuh huruf-huruf secara berurutan untuk menemukan 10 kata kunci materi puasa!</p>
+            </div>
+
+            <!-- Target Words List -->
+            <div id="ws-words-list" class="flex flex-wrap justify-center gap-2 mb-4">
+                <!-- Dynamic word targets -->
+            </div>
+
+            <!-- Selected Letters Bar -->
+            <div class="bg-emerald-100 border border-emerald-300 p-2 rounded-xl text-center mb-4 min-h-[45px] flex items-center justify-center gap-2">
+                <span class="text-xs font-bold text-emerald-800">Kata Terpilih:</span>
+                <span id="ws-current-word" class="font-title text-lg font-bold text-emerald-950 tracking-widest uppercase"></span>
+                <button onclick="clearWordSelection()" class="text-xs bg-rose-500 hover:bg-rose-600 text-white px-2 py-1 rounded ml-2">Hapus</button>
+                <button onclick="submitWordSelection()" class="text-xs bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1 rounded font-bold">Cek Kata</button>
+            </div>
+
+            <!-- Grid Container (10x10 Grid) -->
+            <div class="overflow-x-auto">
+                <div id="ws-grid" class="grid grid-cols-10 gap-1 md:gap-1.5 max-w-md mx-auto bg-emerald-800 p-3 rounded-2xl shadow-inner">
+                    <!-- Dynamic Grid Cells -->
+                </div>
+            </div>
+        </div>
+
+        <div id="modal-victory" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+            <div class="glass-card bg-white rounded-3xl max-w-md w-full p-6 text-center shadow-2xl transform scale-95 transition-all">
+                <div class="w-20 h-20 bg-amber-100 text-amber-500 rounded-full flex items-center justify-center mx-auto mb-4 text-4xl border-4 border-amber-300 shadow-md">
+                    <i class="fa-solid fa-trophy"></i>
+                </div>
+                <h3 class="font-title text-3xl font-bold text-emerald-900 mb-1">MasyaAllah! Spectacular!</h3>
+                <p class="text-slate-600 text-sm mb-4">Kamu telah menyelesaikan tantangan game dengan sangat baik!</p>
+                
+                <div class="bg-emerald-50 rounded-2xl p-4 border border-emerald-200 mb-6">
+                    <div class="text-xs font-bold text-emerald-700 uppercase">Poin Tambahan Diselesaikan</div>
+                    <div id="victory-score" class="font-title text-4xl font-bold text-emerald-800 mt-1">+100</div>
+                </div>
+
+                <button onclick="showMainMenu()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-title text-lg py-3 rounded-xl shadow-lg transition">
+                    Kembali ke Menu Utama
+                </button>
+            </div>
+        </div>
+
+        <div id="modal-doa" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+            <div class="glass-card bg-white rounded-3xl max-w-3xl w-full max-h-[85vh] flex flex-col shadow-2xl overflow-hidden">
+                <!-- Header -->
+                <div class="bg-amber-600 text-white p-4 flex justify-between items-center">
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-hands-praying text-amber-200 text-xl"></i>
+                        <h3 class="font-title text-xl font-bold">Panduan Niat & Doa Ibadah Puasa</h3>
+                    </div>
+                    <button onclick="hideDoaModal()" class="text-white hover:text-rose-200 text-2xl font-bold">&times;</button>
+                </div>
+
+                <!-- Scrollable Body -->
+                <div class="p-6 overflow-y-auto space-y-6 text-slate-800 text-sm leading-relaxed">
+                    
+                    <!-- 1. Niat Puasa Ramadan -->
+                    <div class="bg-amber-50/70 border-2 border-amber-200 rounded-2xl p-5 shadow-sm">
+                        <div class="flex items-center justify-between mb-2 flex-wrap gap-2">
+                            <div class="flex items-center gap-2">
+                                <span class="bg-amber-600 text-white text-xs font-bold px-2.5 py-1 rounded-lg">1</span>
+                                <h4 class="font-title text-lg font-bold text-amber-900">Niat Puasa Wajib (Bulan Ramadan)</h4>
+                            </div>
+                        </div>
+                        <p class="text-xs text-amber-800 mb-3">Dibaca pada malam hari hingga sebelum terbit fajar (waktu subuh):</p>
+                        
+                        <div class="bg-white p-4 rounded-xl border border-amber-200 mb-3 text-right">
+                            <p class="font-arabic text-2xl md:text-3xl text-emerald-950 leading-loose">
+                                نَوَيْتُ صَوْمَ غَدٍ عَنْ أَدَاءِ فَرْضِ شَهْرِ رَمَضَانَ هٰذِهِ السَّنَةِ لِلّٰهِ تَعَالَى
+                            </p>
+                        </div>
+                        <p class="font-semibold text-xs text-emerald-800 italic mb-1">
+                            Latin: "Nawaitu shauma ghadin 'an adâ'i fardi shahri Ramadhâna hâdzihis sanati lillâhi ta'âlâ."
+                        </p>
+                        <p class="text-xs text-slate-600">
+                            <strong>Artinya:</strong> "Saya niat berpuasa esok hari untuk menunaikan kewajiban bulan Ramadan tahun ini karena Allah Ta'ala."
+                        </p>
+                    </div>
+
+                    <!-- 2. Niat Puasa Sunah (Senin-Kamis & Umum) -->
+                    <div class="bg-emerald-50/70 border-2 border-emerald-200 rounded-2xl p-5 shadow-sm">
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="bg-emerald-600 text-white text-xs font-bold px-2.5 py-1 rounded-lg">2</span>
+                            <h4 class="font-title text-lg font-bold text-emerald-900">Niat Puasa Sunah (Senin & Kamis)</h4>
+                        </div>
+                        
+                        <!-- Niat Senin -->
+                        <div class="mb-4 bg-white p-3.5 rounded-xl border border-emerald-200">
+                            <div class="flex items-center justify-between mb-1 flex-wrap gap-2">
+                                <span class="text-xs font-bold text-emerald-800 block">• Niat Puasa Hari Senin:</span>
+                            </div>
+                            <p class="font-arabic text-xl text-emerald-950 leading-relaxed text-right mb-1">
+                                نَوَيْتُ صَوْمَ يَوْمِ الاِثْنَيْنِ سُنَّةً لِلّٰهِ تَعَالَى
+                            </p>
+                            <p class="font-semibold text-xs text-emerald-800 italic mb-1">
+                                Latin: "Nawaitu shauma yaumil itsnaini sunnatan lillâhi ta'âlâ."
+                            </p>
+                            <p class="text-xs text-slate-600">
+                                <strong>Artinya:</strong> "Saya niat berpuasa sunah hari Senin karena Allah Ta'ala."
+                            </p>
+                        </div>
+
+                        <!-- Niat Kamis -->
+                        <div class="bg-white p-3.5 rounded-xl border border-emerald-200">
+                            <div class="flex items-center justify-between mb-1 flex-wrap gap-2">
+                                <span class="text-xs font-bold text-emerald-800 block">• Niat Puasa Hari Kamis:</span>
+                            </div>
+                            <p class="font-arabic text-xl text-emerald-950 leading-relaxed text-right mb-1">
+                                نَوَيْتُ صَوْمَ يَوْمِ الْخَمِيْسِ سُنَّةً لِلّٰهِ تَعَالَى
+                            </p>
+                            <p class="font-semibold text-xs text-emerald-800 italic mb-1">
+                                Latin: "Nawaitu shauma yaumil khamîsi sunnatan lillâhi ta'âlâ."
+                            </p>
+                            <p class="text-xs text-slate-600">
+                                <strong>Artinya:</strong> "Saya niat berpuasa sunah hari Kamis karena Allah Ta'ala."
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- 3. Doa Ketika Sedang Berpuasa / Saat Diganggu/Emosi -->
+                    <div class="bg-teal-50/70 border-2 border-teal-200 rounded-2xl p-5 shadow-sm">
+                        <div class="flex items-center justify-between mb-2 flex-wrap gap-2">
+                            <div class="flex items-center gap-2">
+                                <span class="bg-teal-600 text-white text-xs font-bold px-2.5 py-1 rounded-lg">3</span>
+                                <h4 class="font-title text-lg font-bold text-teal-900">Doa Saat Sedang Berpuasa (Menjaga Diri)</h4>
+                            </div>
+                        </div>
+                        <p class="text-xs text-teal-800 mb-3">Dibaca ketika ada orang yang memancing amarah, mengajak bertengkar, atau menggoda saat kita berpuasa:</p>
+                        
+                        <div class="bg-white p-4 rounded-xl border border-teal-200 mb-3 text-right">
+                            <p class="font-arabic text-2xl text-emerald-950 leading-relaxed">
+                                إِنِّي صَائِمٌ ، إِنِّي صَائِمٌ
+                            </p>
+                        </div>
+                        <p class="font-semibold text-xs text-teal-800 italic mb-1">
+                            Latin: "Inni shâ'imun, inni shâ'im."
+                        </p>
+                        <p class="text-xs text-slate-600">
+                            <strong>Artinya:</strong> "Sesungguhnya aku sedang berpuasa, sesungguhnya aku sedang berpuasa." (HR. Bukhari dan Muslim)
+                        </p>
+                    </div>
+
+                    <!-- 4. Doa Sesudah Berpuasa / Saat Berbuka -->
+                    <div class="bg-amber-50/70 border-2 border-amber-200 rounded-2xl p-5 shadow-sm">
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="bg-amber-600 text-white text-xs font-bold px-2.5 py-1 rounded-lg">4</span>
+                            <h4 class="font-title text-lg font-bold text-amber-900">Doa Sesudah Berpuasa (Ketika Berbuka)</h4>
+                        </div>
+                        <p class="text-xs text-amber-800 mb-3">Terdapat dua bacaan doa berbuka puasa yang populer dan sesuai sunah Rasulullah SAW:</p>
+
+                        <!-- Doa Berbuka Versi 1 -->
+                        <div class="mb-4 bg-white p-3.5 rounded-xl border border-amber-200">
+                            <div class="flex items-center justify-between mb-1 flex-wrap gap-2">
+                                <span class="text-xs font-bold text-amber-900 block">a. Doa Berbuka (Sesuai Hadis Riwayat Abu Daud - Shahih):</span>
+                            </div>
+                            <p class="font-arabic text-2xl text-emerald-950 leading-relaxed text-right mb-2">
+                                ذَهَبَ الظَّمَأُ وَابْتَلَّتِ الْعُرُوقُ وَثَبَتَ الْأَجْرُ إِنْ شَاءَ اللَّهُ
+                            </p>
+                            <p class="font-semibold text-xs text-amber-800 italic mb-1">
+                                Latin: "Dzahabadh zhama'u wabtallatil 'urûqu wa tsabatal ajru insyâ'allâh."
+                            </p>
+                            <p class="text-xs text-slate-600">
+                                <strong>Artinya:</strong> "Telah hilang rasa dahaga, urat-urat telah basah, dan kepastian pahala telah ditetapkan insya Allah."
+                            </p>
+                        </div>
+
+                        <!-- Doa Berbuka Versi 2 -->
+                        <div class="bg-white p-3.5 rounded-xl border border-amber-200">
+                            <div class="flex items-center justify-between mb-1 flex-wrap gap-2">
+                                <span class="text-xs font-bold text-amber-900 block">b. Doa Berbuka (Populer):</span>
+                            </div>
+                            <p class="font-arabic text-2xl text-emerald-950 leading-relaxed text-right mb-2">
+                                اَللّٰهُمَّ لَكَ صُمْتُ وَبِكَ آمَنْتُ وَعَلَى رِزْقِكَ أَفْطَرْتُ بِرَحْمَتِكَ يَا أَرْحَمَ الرَّاحِمِيْنَ
+                            </p>
+                            <p class="font-semibold text-xs text-amber-800 italic mb-1">
+                                Latin: "Allâhumma laka shumtu wa bika âmantu wa 'alâ rizqika afthartu birahmatika yâ arhamar râhimîn."
+                            </p>
+                            <p class="text-xs text-slate-600">
+                                <strong>Artinya:</strong> "Ya Allah, untuk-Mu aku berpuasa, kepada-Mu aku beriman, dan dengan rezeki-Mu aku berbuka, dengan rahmat-Mu wahai Yang Maha Pengasih."
+                            </p>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Footer -->
+                <div class="bg-slate-100 p-3 text-center border-t border-slate-200">
+                    <button onclick="hideDoaModal()" class="bg-amber-600 hover:bg-amber-700 text-white font-bold px-6 py-2 rounded-xl text-sm">
+                        Tutup Panduan Niat & Doa
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="modal-materi" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 flex items-center justify-center p-2 sm:p-4 hidden">
+            <div class="glass-card bg-white rounded-3xl max-w-5xl w-full max-h-[92vh] flex flex-col shadow-2xl overflow-hidden border-4 border-emerald-500">
+                <!-- Header Large -->
+                <div class="bg-emerald-800 text-white p-4 md:p-6 flex justify-between items-center shadow-md">
+                    <div class="flex items-center gap-3">
+                        <div class="bg-amber-400 text-emerald-950 p-2.5 md:p-3 rounded-2xl shadow-md text-xl md:text-2xl">
+                            <i class="fa-solid fa-book-bookmark"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-title text-xl md:text-3xl font-bold">Rangkuman PAI Kelas 5: Puasa Wajib & Sunah</h3>
+                            <p class="text-xs md:text-sm text-emerald-200">Modul pembelajaran ringkas, padat, dilengkapi audio narasi penjelasan</p>
+                        </div>
+                    </div>
+                    <button onclick="hideMateriModal()" class="bg-white/10 hover:bg-white/20 text-white w-10 h-10 md:w-12 md:h-12 rounded-full text-2xl md:text-3xl font-bold flex items-center justify-center transition">&times;</button>
+                </div>
+
+                <!-- Global Audio Bar inside Rangkuman Modal -->
+                <div class="bg-amber-100 border-b border-amber-300 p-3 px-6 flex flex-wrap justify-between items-center gap-2">
+                    <div class="flex items-center gap-2 text-amber-900 text-xs md:text-sm font-bold">
+                        <i class="fa-solid fa-headphones text-lg text-amber-600 animate-bounce"></i>
+                        <span>Putar penjelasan materi melalui suara di bawah ini:</span>
+                    </div>
+                    <button id="btn-materi-all" onclick="speakIndonesianText('Selamat datang di Rangkuman Puasa Wajib dan Sunah PAI Kelas 5. Puasa adalah menahan diri dari makan, minum, dan hal yang membatalkan puasa dari terbit fajar hingga terbenam matahari dengan niat karena Allah. Puasa wajib contohnya puasa Ramadan, puasa Nazar, dan puasa Kafarat. Puasa sunah contohnya puasa Senin Kamis, puasa Arafah, dan puasa Asyura.', 'btn-materi-all')" class="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 active:scale-95 text-white font-bold px-4 py-2 rounded-xl text-xs md:text-sm shadow-md flex items-center gap-2 transition">
+                        <i class="fa-solid fa-circle-play text-base"></i>
+                        <span>🔊 Dengarkan Seluruh Rangkuman</span>
+                    </button>
+                </div>
+
+                <!-- Scrollable Body Large -->
+                <div class="p-5 md:p-8 overflow-y-auto space-y-6 text-slate-800 text-base md:text-lg leading-relaxed">
+                    
+                    <!-- 1. Pengertian -->
+                    <section class="bg-emerald-50/80 p-5 rounded-2xl border-2 border-emerald-300 shadow-sm relative">
+                        <div class="flex flex-wrap justify-between items-center mb-3 gap-2">
+                            <h4 class="font-title text-xl md:text-2xl font-bold text-emerald-900 flex items-center gap-2">
+                                <span class="bg-emerald-700 text-white text-sm md:text-base px-3 py-1 rounded-xl">1</span>
+                                Pengertian Puasa
+                            </h4>
+                            <button id="btn-materi-1" onclick="speakIndonesianText('Pengertian Puasa. Puasa adalah menahan diri dari makan, minum, dan segala sesuatu yang membatalkan puasa, mulai dari terbit fajar atau subuh hingga terbenam matahari atau maghrib, disertai niat semata-mata karena Allah SWT. Manfaat berpuasa adalah meningkatkan ketaatan, melatih kesabaran, mengendalikan hawa nafsu, dan menumbuhkan rasa empati.', 'btn-materi-1')" class="bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold px-3 py-1.5 rounded-xl text-xs md:text-sm shadow flex items-center gap-2 transition">
+                                <i class="fa-solid fa-volume-high text-amber-300"></i>
+                                <span>🔊 Dengarkan Suara</span>
+                            </button>
+                        </div>
+                        <p class="text-slate-700 text-sm md:text-base">
+                            Puasa adalah <strong class="text-emerald-900">menahan diri dari makan, minum, dan segala sesuatu yang membatalkan puasa</strong>, mulai dari <strong class="text-emerald-900">terbit fajar (subuh) hingga terbenam matahari (maghrib)</strong>, disertai niat semata-mata karena Allah SWT.
+                        </p>
+                        <div class="mt-3 bg-white p-3.5 rounded-xl border border-emerald-300 text-xs md:text-sm text-emerald-900 flex items-start gap-2 shadow-sm">
+                            <i class="fa-solid fa-lightbulb text-amber-500 text-lg mt-0.5"></i>
+                            <div>
+                                <strong>Manfaat Melatih Diri:</strong> Meningkatkan ketaatan kepada Allah, melatih kesabaran, mengendalikan hawa nafsu, menjaga lisan dan sikap, serta menumbuhkan rasa simpati kepada fakir miskin.
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- 2. Puasa Wajib -->
+                    <section class="bg-amber-50/80 p-5 rounded-2xl border-2 border-amber-300 shadow-sm">
+                        <div class="flex flex-wrap justify-between items-center mb-3 gap-2">
+                            <h4 class="font-title text-xl md:text-2xl font-bold text-amber-900 flex items-center gap-2">
+                                <span class="bg-amber-600 text-white text-sm md:text-base px-3 py-1 rounded-xl">2</span>
+                                Puasa Wajib
+                            </h4>
+                            <button id="btn-materi-2" onclick="speakIndonesianText('Puasa Wajib. Puasa wajib adalah puasa yang harus dikerjakan oleh setiap muslim. Berdosa jika ditinggalkan tanpa alasan yang dibenarkan agama. Contoh puasa wajib adalah pertama, Puasa Ramadan selama sebulan penuh. Kedua, Puasa Nazar, yaitu puasa yang dijanjikan sendiri jika cita-cita terwujud. Ketiga, Puasa Kafarat, yaitu puasa denda akibat melanggar hukum.', 'btn-materi-2')" class="bg-amber-600 hover:bg-amber-700 active:scale-95 text-white font-bold px-3 py-1.5 rounded-xl text-xs md:text-sm shadow flex items-center gap-2 transition">
+                                <i class="fa-solid fa-volume-high text-amber-200"></i>
+                                <span>🔊 Dengarkan Suara</span>
+                            </button>
+                        </div>
+                        <p class="text-slate-700 text-sm md:text-base mb-3">
+                            Puasa yang <strong class="text-amber-900">harus dikerjakan</strong> oleh setiap muslim yang memenuhi syarat. Berdosa jika ditinggalkan tanpa alasan yang dibenarkan agama (syar'i).
+                        </p>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs md:text-sm">
+                            <div class="bg-white p-3.5 rounded-xl border border-amber-200 shadow-sm">
+                                <strong class="text-amber-900 block text-base font-title mb-1">🌙 Puasa Ramadan</strong>
+                                Dilakukan sebulan penuh di bulan Ramadan. Merupakan rukun Islam yang ke-4.
+                            </div>
+                            <div class="bg-white p-3.5 rounded-xl border border-amber-200 shadow-sm">
+                                <strong class="text-amber-900 block text-base font-title mb-1">✋ Puasa Nazar</strong>
+                                Puasa yang dijanjikan/berniat sendiri oleh seseorang jika permohonan atau cita-citanya terwujud.
+                            </div>
+                            <div class="bg-white p-3.5 rounded-xl border border-amber-200 shadow-sm">
+                                <strong class="text-amber-900 block text-base font-title mb-1">⚖️ Puasa Kafarat</strong>
+                                Puasa tebusan/denda yang wajib dikerjakan akibat melakukan suatu pelanggaran hukum tertentu.
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- 3. Syarat & Rukun -->
+                    <section class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div class="bg-teal-50/80 p-5 rounded-2xl border-2 border-teal-300 shadow-sm">
+                            <div class="flex flex-wrap justify-between items-center mb-2 gap-2">
+                                <h4 class="font-title text-lg md:text-xl font-bold text-teal-900 flex items-center gap-2">
+                                    <i class="fa-solid fa-list-check text-teal-700"></i> Syarat Wajib Puasa
+                                </h4>
+                                <button id="btn-materi-3a" onclick="speakIndonesianText('Syarat Wajib Puasa yaitu Islam, Berakal sehat, Balig atau Cukup umur, Mampu melaksanakan puasa, serta tidak sedang berhalangan.', 'btn-materi-3a')" class="bg-teal-600 hover:bg-teal-700 text-white font-bold px-2.5 py-1 rounded-lg text-xs shadow flex items-center gap-1.5 transition">
+                                    <i class="fa-solid fa-volume-high text-amber-300"></i> Suara
+                                </button>
+                            </div>
+                            <ul class="list-disc pl-5 text-xs md:text-sm space-y-2 text-slate-700">
+                                <li><strong>Beragama Islam</strong> (Wajib bagi seluruh muslim)</li>
+                                <li><strong>Berakal sehat</strong> (Orang gila tidak wajib)</li>
+                                <li><strong>Balig / Cukup Umur</strong> (Anak kecil belajar sesuai kemampuan)</li>
+                                <li><strong>Mampu / Kuat</strong> melaksanakan puasa</li>
+                                <li><strong>Tidak sedang berhalangan</strong> (Sakit berat atau musafir mendapat keringanan)</li>
+                            </ul>
+                        </div>
+
+                        <div class="bg-emerald-50/80 p-5 rounded-2xl border-2 border-emerald-300 shadow-sm">
+                            <div class="flex flex-wrap justify-between items-center mb-2 gap-2">
+                                <h4 class="font-title text-lg md:text-xl font-bold text-emerald-900 flex items-center gap-2">
+                                    <i class="fa-solid fa-star text-emerald-700"></i> Rukun Puasa
+                                </h4>
+                                <button id="btn-materi-3b" onclick="speakIndonesianText('Rukun puasa ada dua. Pertama, Niat di dalam hati karena Allah SWT. Kedua, Menahan Diri dari hal-hal yang membatalkan puasa dari terbit fajar hingga terbenam matahari.', 'btn-materi-3b')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-2.5 py-1 rounded-lg text-xs shadow flex items-center gap-1.5 transition">
+                                    <i class="fa-solid fa-volume-high text-amber-300"></i> Suara
+                                </button>
+                            </div>
+                            <ol class="list-decimal pl-5 text-xs md:text-sm space-y-3 text-slate-700">
+                                <li>
+                                    <strong class="text-emerald-900">Niat:</strong> Berniat untuk berpuasa di dalam hati karena Allah SWT (pada puasa Ramadan dilakukan di malam hari sebelum fajar).
+                                </li>
+                                <li>
+                                    <strong class="text-emerald-900">Menahan Diri:</strong> Menahan diri dari segala hal yang membatalkan puasa mulai fajar terbit hingga matahari terbenam.
+                                </li>
+                            </ol>
+                        </div>
+                    </section>
+
+                    <!-- 4. Membatalkan & Sunah -->
+                    <section class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div class="bg-rose-50/80 p-5 rounded-2xl border-2 border-rose-300 shadow-sm">
+                            <div class="flex flex-wrap justify-between items-center mb-2 gap-2">
+                                <h4 class="font-title text-lg md:text-xl font-bold text-rose-900 flex items-center gap-2">
+                                    <i class="fa-solid fa-ban text-rose-600"></i> Hal Yang Membatalkan
+                                </h4>
+                                <button id="btn-materi-4a" onclick="speakIndonesianText('Hal-hal yang membatalkan puasa adalah makan dan minum sengaja, muntah sengaja, haid atau nifas, gila atau hilang akal, dan murtad.', 'btn-materi-4a')" class="bg-rose-600 hover:bg-rose-700 text-white font-bold px-2.5 py-1 rounded-lg text-xs shadow flex items-center gap-1.5 transition">
+                                    <i class="fa-solid fa-volume-high"></i> Suara
+                                </button>
+                            </div>
+                            <ul class="list-disc pl-5 text-xs md:text-sm space-y-1.5 text-slate-700">
+                                <li>Makan atau minum secara sengaja.</li>
+                                <li>Muntah dengan sengaja.</li>
+                                <li>Haid atau nifas bagi perempuan.</li>
+                                <li>Hilang akal (gila atau pingsan sepanjang hari).</li>
+                                <li>Murtad (keluar dari agama Islam).</li>
+                            </ul>
+                        </div>
+
+                        <div class="bg-lime-50/80 p-5 rounded-2xl border-2 border-lime-400 shadow-sm">
+                            <div class="flex flex-wrap justify-between items-center mb-2 gap-2">
+                                <h4 class="font-title text-lg md:text-xl font-bold text-lime-900 flex items-center gap-2">
+                                    <i class="fa-solid fa-circle-check text-lime-700"></i> Amalan Sunah Saat Puasa
+                                </h4>
+                                <button id="btn-materi-4b" onclick="speakIndonesianText('Amalan sunah saat puasa adalah makan sahur, menyegerakan berbuka saat maghrib, berdoa saat berbuka, memperbanyak baca Al-Quran dan sedekah, serta salat Tarawih.', 'btn-materi-4b')" class="bg-lime-600 hover:bg-lime-700 text-white font-bold px-2.5 py-1 rounded-lg text-xs shadow flex items-center gap-1.5 transition">
+                                    <i class="fa-solid fa-volume-high"></i> Suara
+                                </button>
+                            </div>
+                            <ul class="list-disc pl-5 text-xs md:text-sm space-y-1.5 text-slate-700">
+                                <li>Makan sahur dan mengakhirkan waktu sahur.</li>
+                                <li>Segera berbuka ketika waktu maghrib tiba.</li>
+                                <li>Berdoa sebelum & saat berbuka puasa.</li>
+                                <li>Memperbanyak membaca Al-Qur'an, zikir, & sedekah.</li>
+                                <li>Mengerjakan salat Tarawih di malam Ramadan.</li>
+                            </ul>
+                        </div>
+                    </section>
+
+                    <!-- 5. Macam Puasa Sunah & Hari Dilarang -->
+                    <section class="bg-slate-50 p-5 rounded-2xl border-2 border-slate-300 shadow-sm">
+                        <div class="flex flex-wrap justify-between items-center mb-3 gap-2">
+                            <h4 class="font-title text-xl md:text-2xl font-bold text-slate-900">Macam Puasa Sunah & Hari Dilarang</h4>
+                            <button id="btn-materi-5" onclick="speakIndonesianText('Puasa sunah contohnya puasa Senin Kamis, puasa Arafah tanggal 9 Zulhijah, puasa Asyura dan Tasua, puasa Ayyamul Bidh, puasa 6 hari Syawal, dan puasa Daud. Sedangkan hari dilarang atau haram berpuasa adalah 1 Syawal Idulfitri, 10 Zulhijah Iduladha, serta tanggal 11, 12, dan 13 Zulhijah yaitu hari Tasyrik.', 'btn-materi-5')" class="bg-slate-700 hover:bg-slate-800 text-white font-bold px-3 py-1.5 rounded-xl text-xs md:text-sm shadow flex items-center gap-2 transition">
+                                <i class="fa-solid fa-volume-high text-amber-300"></i>
+                                <span>🔊 Dengarkan Suara</span>
+                            </button>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs md:text-sm">
+                            <div class="bg-emerald-100/60 p-4 rounded-xl border border-emerald-300">
+                                <span class="font-title font-bold text-emerald-900 text-base block mb-2">✨ Macam-Macam Puasa Sunah:</span>
+                                <ul class="space-y-1 text-slate-700">
+                                    <li>• <strong>Puasa Senin-Kamis:</strong> Rutin di hari Senin & Kamis.</li>
+                                    <li>• <strong>Puasa Arafah:</strong> Tanggal 9 Zulhijah (menghapus dosa setahun).</li>
+                                    <li>• <strong>Puasa Asyura & Tasu'a:</strong> Tanggal 9 & 10 Muharam.</li>
+                                    <li>• <strong>Puasa Ayyamul Bidh:</strong> Tanggal 13, 14, 15 tiap bulan Hijriah.</li>
+                                    <li>• <strong>Puasa 6 Hari Syawal:</strong> Dikerjakan di bulan Syawal.</li>
+                                    <li>• <strong>Puasa Daud:</strong> Sehari berpuasa, sehari tidak.</li>
+                                </ul>
+                            </div>
+                            <div class="bg-rose-100/60 p-4 rounded-xl border border-rose-300">
+                                <span class="font-title font-bold text-rose-900 text-base block mb-2">🚫 Hari Dilarang (Haram) Berpuasa:</span>
+                                <ul class="space-y-2 text-slate-700">
+                                    <li>• <strong>1 Syawal:</strong> Hari Raya Idulfitri</li>
+                                    <li>• <strong>10 Zulhijah:</strong> Hari Raya Iduladha</li>
+                                    <li>• <strong>11, 12, dan 13 Zulhijah:</strong> Hari Tasyrik (Hari menikmati hidangan kurban)</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- 6. Hikmah Puasa -->
+                    <section class="bg-gradient-to-r from-emerald-700 to-teal-800 text-white p-5 rounded-2xl shadow-md flex flex-col justify-between">
+                        <div class="flex flex-wrap justify-between items-center mb-2 gap-2">
+                            <h4 class="font-title text-xl md:text-2xl font-bold flex items-center gap-2">
+                                <i class="fa-solid fa-heart text-amber-300"></i> Hikmah Menjalankan Ibadah Puasa
+                            </h4>
+                            <button id="btn-materi-6" onclick="speakIndonesianText('Hikmah menjalankan ibadah puasa adalah meningkatkan ketaatan dan rasa takwa kepada Allah, melatih kejujuran, kedisiplinan, menumbuhkan kepedulian sosial, serta membiasakan diri berakhlak terpuji.', 'btn-materi-6')" class="bg-amber-400 hover:bg-amber-500 text-slate-900 font-bold px-3 py-1.5 rounded-xl text-xs md:text-sm shadow flex items-center gap-2 transition">
+                                <i class="fa-solid fa-volume-high"></i>
+                                <span>🔊 Dengarkan Suara</span>
+                            </button>
+                        </div>
+                        <p class="text-xs md:text-sm text-emerald-100 leading-relaxed">
+                            Meningkatkan ketaatan dan rasa takwa kepada Allah SWT, melatih kejujuran, kedisiplinan, menumbuhkan kepedulian terhadap nasib sesama yang kurang mampu, serta membiasakan diri berakhlak terpuji.
+                        </p>
+                    </section>
+
+                </div>
+
+                <!-- Footer Large -->
+                <div class="bg-slate-100 p-4 text-center border-t border-slate-200">
+                    <button onclick="hideMateriModal()" class="bg-emerald-700 hover:bg-emerald-800 text-white font-title text-base md:text-lg font-bold px-8 py-3 rounded-2xl shadow-md transition transform hover:scale-105">
+                        Saya Pahami Materi Ini! Tutup
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="max-w-5xl mx-auto w-full text-center text-white/80 text-xs py-2 mt-4">
+        Game Edukasi PAI Kelas 5 • Materi Puasa Wajib, Sunah & Panduan Niat Doa Lengkap
+    </footer>
+
+    <script>
+        /* ================= GAME DATA & GLOBAL STATE ================= */
+        let globalScore = 0;
+        let isAudioMuted = false;
+        let currentPlayingBtnId = null;
+        let activeAudioElement = null;
+
+        // Audio Effects (Web Audio API Synthesizer)
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        /* Fullscreen Toggle Functionality */
+        function toggleFullscreen() {
+            const btnIcon = document.getElementById('fullscreen-icon');
+            const btn = document.getElementById('btn-fullscreen');
+
+            if (!document.fullscreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement) {
+                // Enter fullscreen
+                const elem = document.documentElement;
+                if (elem.requestFullscreen) {
+                    elem.requestFullscreen();
+                } else if (elem.webkitRequestFullscreen) { /* Safari / iOS */
+                    elem.webkitRequestFullscreen();
+                } else if (elem.msRequestFullscreen) { /* IE11 */
+                    elem.msRequestFullscreen();
+                }
+                if (btnIcon) btnIcon.className = "fa-solid fa-compress text-lg";
+                if (btn) btn.title = "Keluar Layar Penuh";
+            } else {
+                // Exit fullscreen
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                } else if (document.msExitFullscreen) {
+                    document.msExitFullscreen();
+                }
+                if (btnIcon) btnIcon.className = "fa-solid fa-expand text-lg";
+                if (btn) btn.title = "Layar Penuh";
+            }
+        }
+
+        // Listen for standard ESC key exit fullscreen changes
+        document.addEventListener('fullscreenchange', handleFullscreenChange);
+        document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+        document.addEventListener('msfullscreenchange', handleFullscreenChange);
+
+        function handleFullscreenChange() {
+            const btnIcon = document.getElementById('fullscreen-icon');
+            const btn = document.getElementById('btn-fullscreen');
+            if (document.fullscreenElement || document.webkitFullscreenElement) {
+                if (btnIcon) btnIcon.className = "fa-solid fa-compress text-lg";
+                if (btn) btn.title = "Keluar Layar Penuh";
+            } else {
+                if (btnIcon) btnIcon.className = "fa-solid fa-expand text-lg";
+                if (btn) btn.title = "Layar Penuh";
+            }
+        }
+
+        function stopAudioGlobal() {
+            if (activeAudioElement) {
+                try {
+                    activeAudioElement.pause();
+                    activeAudioElement.currentTime = 0;
+                } catch(e) {}
+                activeAudioElement = null;
+            }
+            if ('speechSynthesis' in window) {
+                try {
+                    window.speechSynthesis.cancel();
+                } catch(e) {}
+            }
+            if (currentPlayingBtnId) {
+                resetAudioBtnUI(currentPlayingBtnId);
+            }
+        }
+
+        /* ================= GAME 4: CARI KATA LOGIC ================= */
+        // Expanded to 10 key Islamic terms for Grade 5 Fasting topic
+        const targetWords = [
+            "NIAT", "SAHUR", "SABAR", "ARAFAH", "NAZAR", 
+            "KAFARAT", "RAMADAN", "SYAWAL", "BERBUKA", "TASUYA"
+        ];
+        let foundWords = [];
+        let selectedLetters = [];
+        let selectedBtnElements = [];
+
+        // Expanded 10x10 Matrix containing all 10 words embedded horizontally
+        const wordGridMatrix = [
+            ['N', 'I', 'A', 'T', 'X', 'B', 'C', 'D', 'E', 'F'],
+            ['S', 'A', 'H', 'U', 'R', 'G', 'H', 'I', 'J', 'K'],
+            ['L', 'M', 'S', 'A', 'B', 'A', 'R', 'N', 'O', 'P'],
+            ['Q', 'A', 'R', 'A', 'F', 'A', 'H', 'R', 'S', 'T'],
+            ['U', 'V', 'N', 'A', 'Z', 'A', 'R', 'W', 'X', 'Y'],
+            ['K', 'A', 'F', 'A', 'R', 'A', 'T', 'Z', 'A', 'B'],
+            ['C', 'D', 'R', 'A', 'M', 'A', 'D', 'A', 'N', 'E'],
+            ['F', 'G', 'S', 'Y', 'A', 'W', 'A', 'L', 'H', 'I'],
+            ['J', 'K', 'B', 'E', 'R', 'B', 'U', 'K', 'A', 'L'],
+            ['M', 'N', 'O', 'T', 'A', 'S', 'U', 'Y', 'A', 'P']
+        ];
+
+        function startWordSearchGame() {
+            hideAllViews();
+            foundWords = [];
+            selectedLetters = [];
+            selectedBtnElements = [];
+            document.getElementById('view-wordsearch').classList.remove('hidden');
+            renderWordSearch();
+        }
+
+        function renderWordSearch() {
+            document.getElementById('ws-found-count').innerText = foundWords.length;
+            document.getElementById('ws-total-count').innerText = targetWords.length;
+            document.getElementById('ws-current-word').innerText = selectedLetters.join('');
+
+            const wordsListEl = document.getElementById('ws-words-list');
+            wordsListEl.innerHTML = '';
+            targetWords.forEach(w => {
+                const isFound = foundWords.includes(w);
+                const badge = document.createElement('span');
+                badge.className = `px-2.5 py-1 rounded-full text-xs font-bold border transition ${
+                    isFound ? 'bg-emerald-600 text-white border-emerald-700 line-through opacity-80' : 'bg-white text-emerald-900 border-emerald-300 shadow-sm'
+                }`;
+                badge.innerText = w;
+                wordsListEl.appendChild(badge);
+            });
+
+            const gridEl = document.getElementById('ws-grid');
+            gridEl.innerHTML = '';
+
+            for (let r = 0; r < 10; r++) {
+                for (let c = 0; c < 10; c++) {
+                    const letter = wordGridMatrix[r][c];
+                    const btn = document.createElement('button');
+                    btn.className = "w-7 h-7 sm:w-8 sm:h-8 md:w-9 md:h-9 bg-white hover:bg-emerald-100 font-title font-bold text-xs sm:text-sm text-emerald-950 rounded-lg sm:rounded-xl shadow flex items-center justify-center transition transform active:scale-90";
+                    btn.innerText = letter;
+                    btn.onclick = () => selectLetter(letter, btn);
+                    gridEl.appendChild(btn);
+                }
+            }
+        }
+
+        function selectLetter(letter, btnEl) {
+            selectedLetters.push(letter);
+            selectedBtnElements.push(btnEl);
+            btnEl.classList.remove('bg-white', 'hover:bg-emerald-100');
+            btnEl.classList.add('bg-amber-400', 'text-amber-950', 'scale-105', 'ring-2', 'ring-amber-500');
+            document.getElementById('ws-current-word').innerText = selectedLetters.join('');
+        }
+
+        function clearWordSelection() {
+            selectedLetters = [];
+            selectedBtnElements = [];
+            renderWordSearch();
+        }
+
+        function submitWordSelection() {
+            const word = selectedLetters.join('');
+            if (targetWords.includes(word) && !foundWords.includes(word)) {
+                playSound('correct');
+                foundWords.push(word);
+                
+                // Highlight found buttons permanently in green
+                selectedBtnElements.forEach(btn => {
+                    btn.classList.remove('bg-amber-400', 'ring-amber-500');
+                    btn.classList.add('bg-emerald-500', 'text-white');
+                });
+                
+                selectedLetters = [];
+                selectedBtnElements = [];
+
+                if (foundWords.length === targetWords.length) {
+                    setTimeout(() => triggerVictory(100), 400);
+                } else {
+                    renderWordSearch();
+                }
+            } else if (foundWords.includes(word)) {
+                playSound('wrong');
+                alert(`Kata "${word}" sudah ditemukan sebelumnya!`);
+                clearWordSelection();
+            } else {
+                playSound('wrong');
+                clearWordSelection();
+            }
+        }
+
+        /* Indonesian Speech Engine for Rangkuman Material */
+        function speakIndonesianText(text, buttonId) {
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+
+            // If same button clicked while playing, stop it
+            if (currentPlayingBtnId === buttonId) {
+                stopAudioGlobal();
+                return;
+            }
+
+            // Stop any playing audio first
+            stopAudioGlobal();
+
+            const btn = document.getElementById(buttonId);
+            const btnSpan = btn ? btn.querySelector('span') : null;
+            const btnIcon = btn ? btn.querySelector('i') : null;
+
+            currentPlayingBtnId = buttonId;
+            if (btnSpan) btnSpan.innerText = "Memutar...";
+            if (btnIcon) btnIcon.className = "fa-solid fa-spinner fa-spin text-sm";
+
+            // Primary: High-Quality Google TTS Audio Stream for Indonesian
+            const encodedText = encodeURIComponent(text.substring(0, 200)); // Optimal chunking
+            const audioUrl = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodedText}&tl=id&client=tw-ob`;
+
+            const audio = new Audio(audioUrl);
+            activeAudioElement = audio;
+
+            audio.onended = function() {
+                resetAudioBtnUI(buttonId);
+                activeAudioElement = null;
+            };
+
+            audio.onerror = function() {
+                // Fallback 1: Web Speech Synthesis (Native Browser TTS)
+                if ('speechSynthesis' in window) {
+                    window.speechSynthesis.cancel();
+                    const utterance = new SpeechSynthesisUtterance(text);
+                    utterance.lang = 'id-ID';
+                    utterance.rate = 0.9;
+
+                    utterance.onend = function() {
+                        resetAudioBtnUI(buttonId);
+                    };
+
+                    utterance.onerror = function() {
+                        playSynthesizedAudioFallback(buttonId);
+                    };
+
+                    try {
+                        window.speechSynthesis.speak(utterance);
+                    } catch(e) {
+                        playSynthesizedAudioFallback(buttonId);
+                    }
+                } else {
+                    // Fallback 2: Audio Synth Melody
+                    playSynthesizedAudioFallback(buttonId);
+                }
+            };
+
+            audio.play().catch(err => {
+                // Autoplay policy or fetch error fallback
+                if ('speechSynthesis' in window) {
+                    window.speechSynthesis.cancel();
+                    const utterance = new SpeechSynthesisUtterance(text);
+                    utterance.lang = 'id-ID';
+                    utterance.rate = 0.9;
+                    utterance.onend = function() { resetAudioBtnUI(buttonId); };
+                    utterance.onerror = function() { playSynthesizedAudioFallback(buttonId); };
+                    try { window.speechSynthesis.speak(utterance); } catch(e) { playSynthesizedAudioFallback(buttonId); }
+                } else {
+                    playSynthesizedAudioFallback(buttonId);
+                }
+            });
+        }
+
+        /* Robust Audio System for Arabic Prayers */
+        function playArabicAudio(text, buttonId) {
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+
+            if (currentPlayingBtnId && currentPlayingBtnId !== buttonId) {
+                resetAudioBtnUI(currentPlayingBtnId);
+            }
+
+            const btn = document.getElementById(buttonId);
+            const btnSpan = btn ? btn.querySelector('span') : null;
+            const btnIcon = btn ? btn.querySelector('i') : null;
+
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+            }
+
+            currentPlayingBtnId = buttonId;
+            if (btnSpan) btnSpan.innerText = "Memutar...";
+            if (btnIcon) btnIcon.className = "fa-solid fa-spinner fa-spin text-sm";
+
+            let speechSupported = false;
+
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'ar-SA';
+                utterance.rate = 0.8;
+
+                const voices = window.speechSynthesis.getVoices();
+                const arabicVoice = voices.find(v => v.lang.startsWith('ar'));
+                if (arabicVoice) {
+                    utterance.voice = arabicVoice;
+                }
+
+                utterance.onend = function() {
+                    resetAudioBtnUI(buttonId);
+                };
+
+                utterance.onerror = function() {
+                    playSynthesizedAudioFallback(buttonId);
+                };
+
+                try {
+                    window.speechSynthesis.speak(utterance);
+                    speechSupported = true;
+                } catch(e) {
+                    speechSupported = false;
+                }
+            }
+
+            if (!speechSupported) {
+                playSynthesizedAudioFallback(buttonId);
+            }
+        }
+
+        function resetAudioBtnUI(buttonId) {
+            const btn = document.getElementById(buttonId);
+            if (btn) {
+                const btnSpan = btn.querySelector('span');
+                const btnIcon = btn.querySelector('i');
+                if (btnSpan) btnSpan.innerText = "Putar Audio";
+                if (btnIcon) btnIcon.className = "fa-solid fa-volume-high text-sm";
+            }
+            if (currentPlayingBtnId === buttonId) {
+                currentPlayingBtnId = null;
+            }
+        }
+
+        function playSynthesizedAudioFallback(buttonId) {
+            try {
+                const now = audioCtx.currentTime;
+                const notes = [329.63, 349.23, 392.00, 440.00, 493.88, 523.25, 587.33]; 
+                
+                notes.forEach((freq, index) => {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(freq, now + index * 0.3);
+                    
+                    gain.gain.setValueAtTime(0.001, now + index * 0.3);
+                    gain.gain.exponentialRampToValueAtTime(0.2, now + index * 0.3 + 0.05);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + index * 0.3 + 0.28);
+
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+
+                    osc.start(now + index * 0.3);
+                    osc.stop(now + index * 0.3 + 0.3);
+                });
+
+                setTimeout(() => {
+                    resetAudioBtnUI(buttonId);
+                }, (notes.length * 300) + 100);
+
+            } catch (e) {
+                resetAudioBtnUI(buttonId);
+            }
+        }
+
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.onvoiceschanged = function() {
+                window.speechSynthesis.getVoices();
+            };
+        }
+
+        function playSound(type) {
+            if (isAudioMuted) return;
+            try {
+                if (audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                if (type === 'correct') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(523.25, audioCtx.currentTime);
+                    osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.1);
+                    gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.3);
+                } else if (type === 'wrong') {
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(220, audioCtx.currentTime);
+                    osc.frequency.setValueAtTime(174.61, audioCtx.currentTime + 0.15);
+                    gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.3);
+                } else if (type === 'win') {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(440, audioCtx.currentTime);
+                    osc.frequency.setValueAtTime(554.37, audioCtx.currentTime + 0.1);
+                    osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.2);
+                    osc.frequency.setValueAtTime(880, audioCtx.currentTime + 0.3);
+                    gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.6);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.6);
+                }
+            } catch(e) {
+                console.log('Audio error:', e);
+            }
+        }
+
+        function toggleAudio() {
+            isAudioMuted = !isAudioMuted;
+            const icon = document.getElementById('sound-icon');
+            if (isAudioMuted) {
+                icon.className = "fa-solid fa-volume-xmark text-lg text-rose-500";
+            } else {
+                icon.className = "fa-solid fa-volume-high text-lg";
+            }
+        }
+
+        function updateGlobalScore(points) {
+            globalScore += points;
+            document.getElementById('global-score').innerText = `Skor: ${globalScore}`;
+        }
+
+        /* Navigation Controls */
+        function hideAllViews() {
+            document.getElementById('view-menu')?.classList.add('hidden');
+            document.getElementById('view-quiz')?.classList.add('hidden');
+            document.getElementById('view-sort')?.classList.add('hidden');
+            document.getElementById('view-calendar')?.classList.add('hidden');
+            document.getElementById('view-wordsearch')?.classList.add('hidden');
+            document.getElementById('modal-victory')?.classList.add('hidden');
+        }
+
+        function showMainMenu() {
+            hideAllViews();
+            document.getElementById('view-menu')?.classList.remove('hidden');
+        }
+
+        function showMateriModal() {
+            document.getElementById('modal-materi').classList.remove('hidden');
+        }
+        function hideMateriModal() {
+            stopAudioGlobal();
+            document.getElementById('modal-materi').classList.add('hidden');
+        }
+
+        function showDoaModal() {
+            document.getElementById('modal-doa').classList.remove('hidden');
+        }
+        function hideDoaModal() {
+            stopAudioGlobal();
+            document.getElementById('modal-doa').classList.add('hidden');
+        }
+
+        function triggerVictory(addedScore) {
+            playSound('win');
+            updateGlobalScore(addedScore);
+            document.getElementById('victory-score').innerText = `+${addedScore} Poin!`;
+            document.getElementById('modal-victory').classList.remove('hidden');
+            if (typeof confetti === 'function') {
+                confetti({
+                    particleCount: 100,
+                    spread: 70,
+                    origin: { y: 0.6 }
+                });
+            }
+        }
+
+        /* ================= GAME 1: KUIS PILIHAN GANDA LOGIC ================= */
+        const quizQuestions = [
+            {
+                q: "Apa arti puasa secara bahasa dan syariat?",
+                category: "1. Pengertian Puasa",
+                options: [
+                    "Menahan diri dari makan, minum, dan membatalkan puasa dari fajar hingga terbenam matahari.",
+                    "Sengaja tidak makan siang agar tubuh menjadi kurus.",
+                    "Menahan diri dari berbicara sepanjang hari penuh.",
+                    "Makan sahur di pagi hari dan tidur seharian."
+                ],
+                answer: 0
+            },
+            {
+                q: "Kapan bacaan Niat Puasa Ramadan wajib dilakukan?",
+                category: "2. Niat Puasa",
+                options: [
+                    "Pada malam hari sebelum terbit fajar (subuh)",
+                    "Saat makan siang hari",
+                    "Ketika matahari sedang terbenam",
+                    "Setelah waktu maghrib usai"
+                ],
+                answer: 0
+            },
+            {
+                q: "Lanjutan dari bacaan doa berbuka: 'Dzahabadh zhama'u wabtallatil 'urûqu...'",
+                category: "3. Doa Berbuka Puasa",
+                options: [
+                    "Wa tsabatal ajru insyâ'allâh",
+                    "Wa 'alâ rizqika afthartu",
+                    "Lillâhi ta'âlâ",
+                    "Inni shâ'imun"
+                ],
+                answer: 0
+            },
+            {
+                q: "Berikut ini yang merupakan contoh dari Puasa Wajib adalah...",
+                category: "4. Puasa Wajib",
+                options: [
+                    "Puasa Senin-Kamis",
+                    "Puasa Ramadan, Puasa Nazar, dan Puasa Kafarat",
+                    "Puasa Arafah dan Puasa Daud",
+                    "Puasa 6 Hari di Bulan Syawal"
+                ],
+                answer: 1
+            },
+            {
+                q: "Jika seseorang marah atau terpancing emosi saat berpuasa, perkataan sunah yang dianjurkan adalah...",
+                category: "5. Doa Saat Berpuasa",
+                options: [
+                    "Inni Shâ'im (Sesungguhnya aku sedang berpuasa)",
+                    "Subhanallah walhamdulillah",
+                    "Bismillah ir-Rahman ir-Rahim",
+                    "Astaghfirullahal 'adzim"
+                ],
+                answer: 0
+            },
+            {
+                q: "Anak kecil yang belum balig belum wajib berpuasa, tetapi mereka...",
+                category: "6. Syarat Wajib Puasa",
+                options: [
+                    "Harus membayar fidyah",
+                    "Dilarang ikut sahur bersama keluarga",
+                    "Belajar dan berlatih berpuasa sesuai kemampuan",
+                    "Harus berpuasa penuh tanpa henti"
+                ],
+                answer: 2
+            },
+            {
+                q: "Manakah yang termasuk dalam Rukun Puasa?",
+                category: "7. Rukun Puasa",
+                options: [
+                    "Makan makanan yang manis saat berbuka",
+                    "Niat dan Menahan diri dari hal-hal yang membatalkan puasa",
+                    "Membaca Al-Qur'an sebanyak 30 juz",
+                    "Mandi wajib sebelum subuh"
+                ],
+                answer: 1
+            },
+            {
+                q: "Amalan manakah yang disunahkan saat menjalankan ibadah puasa?",
+                category: "8. Sunah Puasa",
+                options: [
+                    "Mengakhirkan makan sahur & menyegerakan berbuka",
+                    "Tidur sepanjang hari dari pagi sampai sore",
+                    "Bermain game sampai lupa waktu salat",
+                    "Menunda-nunda waktu berbuka puasa"
+                ],
+                answer: 0
+            },
+            {
+                q: "Puasa sunah yang dikerjakan pada tanggal 9 Zulhijah bagi orang yang tidak berhaji adalah...",
+                category: "9. Puasa Sunah",
+                options: [
+                    "Puasa Asyura",
+                    "Puasa Arafah",
+                    "Puasa Tasu'a",
+                    "Puasa Nisfu Sya'ban"
+                ],
+                answer: 1
+            },
+            {
+                q: "Kapan kita DILARANG (HARAM) untuk berpuasa?",
+                category: "10. Hari Dilarang",
+                options: [
+                    "Hari Senin dan Kamis",
+                    "1 Syawal (Idulfitri) dan 10 Zulhijah (Iduladha)",
+                    "Tanggal 13, 14, 15 setiap bulan Hijriah",
+                    "Bulan Ramadan"
+                ],
+                answer: 1
+            }
+        ];
+
+        let currentQuizIndex = 0;
+        let quizScore = 0;
+
+        function startQuizGame() {
+            hideAllViews();
+            currentQuizIndex = 0;
+            quizScore = 0;
+            document.getElementById('view-quiz').classList.remove('hidden');
+            loadQuizQuestion();
+        }
+
+        function loadQuizQuestion() {
+            const qData = quizQuestions[currentQuizIndex];
+            document.getElementById('quiz-progress').innerText = `Pertanyaan ${currentQuizIndex + 1}/${quizQuestions.length}`;
+            document.getElementById('quiz-category').innerText = qData.category;
+            document.getElementById('quiz-question').innerText = qData.q;
+            
+            const feedbackBox = document.getElementById('quiz-feedback');
+            feedbackBox.classList.add('hidden');
+            document.getElementById('btn-next-quiz').classList.add('hidden');
+
+            const optionsContainer = document.getElementById('quiz-options');
+            optionsContainer.innerHTML = '';
+
+            qData.options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = "w-full text-left bg-emerald-50 hover:bg-emerald-100 border-2 border-emerald-200 text-slate-800 p-4 rounded-xl font-medium transition duration-200 flex items-center justify-between group";
+                btn.innerHTML = `
+                    <span>${opt}</span>
+                    <i class="fa-regular fa-circle text-emerald-400 group-hover:text-emerald-600"></i>
+                `;
+                btn.onclick = () => selectQuizOption(idx);
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function selectQuizOption(selectedIdx) {
+            const qData = quizQuestions[currentQuizIndex];
+            const optionsContainer = document.getElementById('quiz-options');
+            const buttons = optionsContainer.children;
+            const feedbackBox = document.getElementById('quiz-feedback');
+
+            for (let btn of buttons) {
+                btn.onclick = null;
+                btn.classList.remove('hover:bg-emerald-100');
+            }
+
+            if (selectedIdx === qData.answer) {
+                playSound('correct');
+                buttons[selectedIdx].className = "w-full text-left bg-emerald-600 text-white border-2 border-emerald-700 p-4 rounded-xl font-bold flex items-center justify-between";
+                buttons[selectedIdx].querySelector('i').className = "fa-solid fa-circle-check text-white";
+                
+                feedbackBox.className = "p-4 rounded-xl text-center font-bold text-sm mb-4 bg-emerald-100 text-emerald-900 border border-emerald-300";
+                feedbackBox.innerHTML = "✨ Benar Sekali! Jawabanmu Tepat!";
+                quizScore += 10;
+            } else {
+                playSound('wrong');
+                buttons[selectedIdx].className = "w-full text-left bg-rose-500 text-white border-2 border-rose-700 p-4 rounded-xl font-bold flex items-center justify-between";
+                buttons[selectedIdx].querySelector('i').className = "fa-solid fa-circle-xmark text-white";
+
+                buttons[qData.answer].className = "w-full text-left bg-emerald-200 text-emerald-900 border-2 border-emerald-500 p-4 rounded-xl font-bold flex items-center justify-between";
+                
+                feedbackBox.className = "p-4 rounded-xl text-center font-bold text-sm mb-4 bg-rose-100 text-rose-900 border border-rose-300";
+                feedbackBox.innerHTML = `❌ Masih Kurang Tepat. Jawaban yang benar: ${qData.options[qData.answer]}`;
+            }
+
+            feedbackBox.classList.remove('hidden');
+            document.getElementById('btn-next-quiz').classList.remove('hidden');
+        }
+
+        function nextQuestion() {
+            currentQuizIndex++;
+            if (currentQuizIndex < quizQuestions.length) {
+                loadQuizQuestion();
+            } else {
+                triggerVictory(quizScore);
+            }
+        }
+
+        /* ================= GAME 2: SORTIR PUASA LOGIC ================= */
+        const sortCardsData = [
+            { title: "Puasa Ramadan", desc: "Dilakukan sebulan penuh di bulan Ramadan.", type: "wajib" },
+            { title: "Puasa Senin-Kamis", desc: "Dikerjakan rutin pada hari Senin dan Kamis.", type: "sunah" },
+            { title: "Puasa Nazar", desc: "Puasa karena janji diri sendiri kepada Allah.", type: "wajib" },
+            { title: "Puasa Arafah", desc: "Dikerjakan tanggal 9 Zulhijah bagi yang tidak haji.", type: "sunah" },
+            { title: "Puasa Kafarat", desc: "Puasa tebusan akibat melanggar hukum tertentu.", type: "wajib" },
+            { title: "Puasa Asyura", desc: "Dikerjakan pada tanggal 10 Muharam.", type: "sunah" },
+            { title: "Puasa 6 Hari Syawal", desc: "Dikerjakan setelah hari raya Idulfitri.", type: "sunah" },
+            { title: "Puasa Daud", desc: "Sehari berpuasa, sehari tidak secara berselang-seling.", type: "sunah" }
+        ];
+
+        let currentSortList = [];
+        let sortPoints = 0;
+
+        function startSortGame() {
+            hideAllViews();
+            currentSortList = [...sortCardsData].sort(() => Math.random() - 0.5);
+            sortPoints = 0;
+            document.getElementById('view-sort').classList.remove('hidden');
+            renderSortCard();
+        }
+
+        function renderSortCard() {
+            document.getElementById('sort-cards-left').innerText = currentSortList.length;
+
+            if (currentSortList.length === 0) {
+                triggerVictory(sortPoints);
+                return;
+            }
+
+            const current = currentSortList[0];
+            document.getElementById('sort-card-title').innerText = current.title;
+            document.getElementById('sort-card-desc').innerText = current.desc;
+        }
+
+        function classifyCard(userCategory) {
+            if (currentSortList.length === 0) return;
+
+            const current = currentSortList[0];
+            const cardEl = document.getElementById('current-sort-card');
+
+            if (current.type === userCategory) {
+                playSound('correct');
+                sortPoints += 15;
+                cardEl.classList.add('scale-105', 'bg-emerald-400');
+            } else {
+                playSound('wrong');
+                cardEl.classList.add('shake', 'bg-rose-400');
+            }
+
+            setTimeout(() => {
+                cardEl.classList.remove('scale-105', 'bg-emerald-400', 'shake', 'bg-rose-400');
+                currentSortList.shift();
+                renderSortCard();
+            }, 300);
+        }
+
+        const calendarDaysData = [
+            { day: "1 Syawal (Hari Raya Idulfitri)", desc: "Hari kemenangan seluruh umat Islam setelah berpuasa Ramadan.", type: "dilarang" },
+            { day: "Hari Senin & Kamis", desc: "Hari dimana amalan diangkat kepada Allah SWT.", type: "sunah" },
+            { day: "10 Zulhijah (Hari Raya Iduladha)", desc: "Hari raya kurban bagi umat Islam.", type: "dilarang" },
+            { day: "9 Zulhijah (Hari Arafah)", desc: "Disunahkan bagi muslim yang tidak sedang melaksanakan ibadah haji.", type: "sunah" },
+            { day: "11, 12, dan 13 Zulhijah (Hari Tasyrik)", desc: "Hari untuk menikmati hidangan kurban dan berzikir.", type: "dilarang" },
+            { day: "9 & 10 Muharam (Tasu'a & Asyura)", desc: "Hari bersejarah dengan keutamaan menghapus dosa setahun lalu.", type: "sunah" }
+        ];
+
+        let calIndex = 0;
+        let calScore = 0;
+
+        function startCalendarGame() {
+            hideAllViews();
+            calIndex = 0;
+            calScore = 0;
+            document.getElementById('view-calendar').classList.remove('hidden');
+            loadCalendarDay();
+        }
+
+        function loadCalendarDay() {
+            if (calIndex >= calendarDaysData.length) {
+                triggerVictory(calScore);
+                return;
+            }
+
+            document.getElementById('cal-index').innerText = calIndex + 1;
+            const current = calendarDaysData[calIndex];
+            document.getElementById('cal-day-name').innerText = current.day;
+            document.getElementById('cal-day-desc').innerText = current.desc;
+        }
+
+        function checkCalendarAnswer(answer) {
+            const current = calendarDaysData[calIndex];
+            if (current.type === answer) {
+                playSound('correct');
+                calScore += 15;
+            } else {
+                playSound('wrong');
+            }
+
+            calIndex++;
+            loadCalendarDay();
+        }
+
+        window.onload = function() {
+            showMainMenu();
+        };
+    </script>
+</body>
+</html>
