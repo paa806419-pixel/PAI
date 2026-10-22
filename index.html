@@ -286,20 +286,27 @@
                 </div>
             </div>
 
+            <!-- Feedback Notification Box for Sort Game -->
+            <div id="sort-feedback" class="hidden max-w-md mx-auto p-3.5 rounded-xl text-center font-bold text-sm mb-4 transition-all"></div>
+
             <!-- Bin Selection Buttons -->
             <div class="grid grid-cols-2 gap-4 max-w-md mx-auto">
-                <button onclick="classifyCard('wajib')" class="btn-hover-effect bg-emerald-700 hover:bg-emerald-800 text-white p-4 rounded-2xl shadow-lg border-2 border-emerald-500 text-center">
+                <button id="btn-sort-wajib" onclick="classifyCard('wajib')" class="btn-hover-effect bg-emerald-700 hover:bg-emerald-800 text-white p-4 rounded-2xl shadow-lg border-2 border-emerald-500 text-center">
                     <div class="text-3xl mb-1"><i class="fa-solid fa-check-double"></i></div>
                     <span class="font-title font-bold text-lg block">PUASA WAJIB</span>
                     <span class="text-xs text-emerald-200">Harus dikerjakan</span>
                 </button>
 
-                <button onclick="classifyCard('sunah')" class="btn-hover-effect bg-teal-600 hover:bg-teal-700 text-white p-4 rounded-2xl shadow-lg border-2 border-teal-400 text-center">
+                <button id="btn-sort-sunah" onclick="classifyCard('sunah')" class="btn-hover-effect bg-teal-600 hover:bg-teal-700 text-white p-4 rounded-2xl shadow-lg border-2 border-teal-400 text-center">
                     <div class="text-3xl mb-1"><i class="fa-solid fa-star text-amber-300"></i></div>
                     <span class="font-title font-bold text-lg block">PUASA SUNAH</span>
                     <span class="text-xs text-teal-200">Dianjurkan (Pahala)</span>
                 </button>
             </div>
+            
+            <button id="btn-next-sort" onclick="nextSortCard()" class="hidden max-w-md mx-auto mt-4 w-full bg-emerald-600 hover:bg-emerald-700 text-white font-title text-lg py-3 rounded-xl shadow-lg transition">
+                Lanjut Kartu Berikutnya <i class="fa-solid fa-arrow-right ml-2"></i>
+            </button>
         </div>
 
         <div id="view-calendar" class="glass-card rounded-3xl p-6 md:p-8 shadow-2xl hidden">
@@ -314,13 +321,16 @@
                 <h3 class="font-title text-2xl font-bold text-emerald-900 mb-2">Detektif Hari Hukum Puasa</h3>
                 <p class="text-sm text-slate-600 mb-6">Tentukan apakah pada hari/tanggal Hijriah berikut kita **DISUNAHKAN** atau **DILARANG (HARAM)** berpuasa!</p>
 
-                <div class="bg-white border-2 border-emerald-200 p-6 rounded-2xl shadow-lg mb-6 relative">
+                <div class="bg-white border-2 border-emerald-200 p-6 rounded-2xl shadow-lg mb-4 relative">
                     <div class="text-4xl text-emerald-600 mb-2"><i class="fa-regular fa-calendar-check"></i></div>
                     <h4 id="cal-day-name" class="font-title text-2xl font-bold text-emerald-950">1 Syawal (Hari Raya Idulfitri)</h4>
                     <p id="cal-day-desc" class="text-sm text-slate-500 mt-2">Hari kemenangan setelah sebulan penuh berpuasa.</p>
                 </div>
 
-                <div class="grid grid-cols-2 gap-4">
+                <!-- Feedback Notification Box for Calendar Game -->
+                <div id="cal-feedback" class="hidden p-3.5 rounded-xl text-center font-bold text-sm mb-4 transition-all"></div>
+
+                <div id="cal-buttons" class="grid grid-cols-2 gap-4">
                     <button onclick="checkCalendarAnswer('sunah')" class="btn-hover-effect bg-emerald-600 hover:bg-emerald-700 text-white font-title p-4 rounded-xl shadow-md text-lg">
                         <i class="fa-solid fa-thumbs-up block text-2xl mb-1"></i>
                         Sunah Berpuasa
@@ -330,6 +340,10 @@
                         Dilarang (Haram)
                     </button>
                 </div>
+
+                <button id="btn-next-cal" onclick="nextCalendarDay()" class="hidden w-full bg-emerald-600 hover:bg-emerald-700 text-white font-title text-lg py-3 rounded-xl shadow-lg transition mt-4">
+                    Lanjut Hari Berikutnya <i class="fa-solid fa-arrow-right ml-2"></i>
+                </button>
             </div>
         </div>
         <!-- ================= GAME 4: CARI KATA ISLAMI ================= -->
@@ -354,12 +368,15 @@
             </div>
 
             <!-- Selected Letters Bar -->
-            <div class="bg-emerald-100 border border-emerald-300 p-2 rounded-xl text-center mb-4 min-h-[45px] flex items-center justify-center gap-2">
+            <div class="bg-emerald-100 border border-emerald-300 p-2 rounded-xl text-center mb-3 min-h-[45px] flex items-center justify-center gap-2">
                 <span class="text-xs font-bold text-emerald-800">Kata Terpilih:</span>
                 <span id="ws-current-word" class="font-title text-lg font-bold text-emerald-950 tracking-widest uppercase"></span>
                 <button onclick="clearWordSelection()" class="text-xs bg-rose-500 hover:bg-rose-600 text-white px-2 py-1 rounded ml-2">Hapus</button>
                 <button onclick="submitWordSelection()" class="text-xs bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1 rounded font-bold">Cek Kata</button>
             </div>
+
+            <!-- Feedback Notification Box for Word Search Game -->
+            <div id="ws-feedback" class="hidden p-3 rounded-xl text-center font-bold text-sm mb-3 transition-all"></div>
 
             <!-- Grid Container (10x10 Grid) -->
             <div class="overflow-x-auto">
@@ -926,6 +943,10 @@
 
         function submitWordSelection() {
             const word = selectedLetters.join('');
+            const feedbackEl = document.getElementById('ws-feedback');
+            
+            if (!word) return;
+
             if (targetWords.includes(word) && !foundWords.includes(word)) {
                 playSound('correct');
                 foundWords.push(word);
@@ -939,17 +960,26 @@
                 selectedLetters = [];
                 selectedBtnElements = [];
 
+                feedbackEl.className = "p-3 rounded-xl text-center font-bold text-sm mb-3 bg-emerald-100 text-emerald-900 border border-emerald-300";
+                feedbackEl.innerHTML = `✨ MasyaAllah Benar! Kata "${word}" berhasil ditemukan! (+10 Poin)`;
+                feedbackEl.classList.remove('hidden');
+
                 if (foundWords.length === targetWords.length) {
-                    setTimeout(() => triggerVictory(100), 400);
+                    setTimeout(() => triggerVictory(100), 800);
                 } else {
                     renderWordSearch();
                 }
             } else if (foundWords.includes(word)) {
                 playSound('wrong');
-                alert(`Kata "${word}" sudah ditemukan sebelumnya!`);
+                feedbackEl.className = "p-3 rounded-xl text-center font-bold text-sm mb-3 bg-amber-100 text-amber-900 border border-amber-300";
+                feedbackEl.innerHTML = `⚠️ Kata "${word}" sudah kamu temukan sebelumnya!`;
+                feedbackEl.classList.remove('hidden');
                 clearWordSelection();
             } else {
                 playSound('wrong');
+                feedbackEl.className = "p-3 rounded-xl text-center font-bold text-sm mb-3 bg-rose-100 text-rose-900 border border-rose-300";
+                feedbackEl.innerHTML = `❌ Kata "${word}" kurang tepat. Coba susun huruf lainnya!`;
+                feedbackEl.classList.remove('hidden');
                 clearWordSelection();
             }
         }
@@ -1459,6 +1489,11 @@
 
         function renderSortCard() {
             document.getElementById('sort-cards-left').innerText = currentSortList.length;
+            document.getElementById('sort-feedback').classList.add('hidden');
+            document.getElementById('btn-next-sort').classList.add('hidden');
+            
+            document.getElementById('btn-sort-wajib').disabled = false;
+            document.getElementById('btn-sort-sunah').disabled = false;
 
             if (currentSortList.length === 0) {
                 triggerVictory(sortPoints);
@@ -1475,23 +1510,41 @@
 
             const current = currentSortList[0];
             const cardEl = document.getElementById('current-sort-card');
+            const feedbackEl = document.getElementById('sort-feedback');
 
-            if (current.type === userCategory) {
+            document.getElementById('btn-sort-wajib').disabled = true;
+            document.getElementById('btn-sort-sunah').disabled = true;
+
+            const isCorrect = current.type === userCategory;
+            const correctText = current.type === 'wajib' ? 'PUASA WAJIB' : 'PUASA SUNAH';
+
+            if (isCorrect) {
                 playSound('correct');
                 sortPoints += 15;
                 cardEl.classList.add('scale-105', 'bg-emerald-400');
+                
+                feedbackEl.className = "max-w-md mx-auto p-3.5 rounded-xl text-center font-bold text-sm mb-4 bg-emerald-100 text-emerald-900 border border-emerald-300";
+                feedbackEl.innerHTML = `✨ Tepat Sekali! <strong>${current.title}</strong> adalah termasuk <strong>${correctText}</strong>! (+15 Poin)`;
             } else {
                 playSound('wrong');
                 cardEl.classList.add('shake', 'bg-rose-400');
+                
+                feedbackEl.className = "max-w-md mx-auto p-3.5 rounded-xl text-center font-bold text-sm mb-4 bg-rose-100 text-rose-900 border border-rose-300";
+                feedbackEl.innerHTML = `❌ Kurang Tepat! <strong>${current.title}</strong> seharusnya adalah <strong>${correctText}</strong>.`;
             }
 
-            setTimeout(() => {
-                cardEl.classList.remove('scale-105', 'bg-emerald-400', 'shake', 'bg-rose-400');
-                currentSortList.shift();
-                renderSortCard();
-            }, 300);
+            feedbackEl.classList.remove('hidden');
+            document.getElementById('btn-next-sort').classList.remove('hidden');
         }
 
+        function nextSortCard() {
+            const cardEl = document.getElementById('current-sort-card');
+            cardEl.classList.remove('scale-105', 'bg-emerald-400', 'shake', 'bg-rose-400');
+            currentSortList.shift();
+            renderSortCard();
+        }
+
+        /* ================= GAME 3: DETEKTIF HARI PUASA LOGIC ================= */
         const calendarDaysData = [
             { day: "1 Syawal (Hari Raya Idulfitri)", desc: "Hari kemenangan seluruh umat Islam setelah berpuasa Ramadan.", type: "dilarang" },
             { day: "Hari Senin & Kamis", desc: "Hari dimana amalan diangkat kepada Allah SWT.", type: "sunah" },
@@ -1522,17 +1575,40 @@
             const current = calendarDaysData[calIndex];
             document.getElementById('cal-day-name').innerText = current.day;
             document.getElementById('cal-day-desc').innerText = current.desc;
+
+            document.getElementById('cal-feedback').classList.add('hidden');
+            document.getElementById('btn-next-cal').classList.add('hidden');
+            
+            const buttons = document.getElementById('cal-buttons').children;
+            for (let b of buttons) b.disabled = false;
         }
 
-        function checkCalendarAnswer(answer) {
+        function checkCalendarAnswer(userAnswer) {
             const current = calendarDaysData[calIndex];
-            if (current.type === answer) {
+            const feedbackEl = document.getElementById('cal-feedback');
+            const buttons = document.getElementById('cal-buttons').children;
+
+            for (let b of buttons) b.disabled = true;
+
+            const isCorrect = current.type === userAnswer;
+            const correctText = current.type === 'sunah' ? 'SUNAH BERPUASA' : 'DILARANG (HARAM) BERPUASA';
+
+            if (isCorrect) {
                 playSound('correct');
                 calScore += 15;
+                feedbackEl.className = "p-3.5 rounded-xl text-center font-bold text-sm mb-4 bg-emerald-100 text-emerald-900 border border-emerald-300";
+                feedbackEl.innerHTML = `✨ Hebat! Jawabanmu Benar! Pada <strong>${current.day}</strong> kita <strong>${correctText}</strong>! (+15 Poin)`;
             } else {
                 playSound('wrong');
+                feedbackEl.className = "p-3.5 rounded-xl text-center font-bold text-sm mb-4 bg-rose-100 text-rose-900 border border-rose-300";
+                feedbackEl.innerHTML = `❌ Kurang Tepat! Pada <strong>${current.day}</strong> hukumnya adalah <strong>${correctText}</strong>.`;
             }
 
+            feedbackEl.classList.remove('hidden');
+            document.getElementById('btn-next-cal').classList.remove('hidden');
+        }
+
+        function nextCalendarDay() {
             calIndex++;
             loadCalendarDay();
         }
